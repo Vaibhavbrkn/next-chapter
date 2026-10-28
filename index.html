@@ -14,7 +14,8 @@
     --serif:"Cormorant Garamond", Georgia, serif; --sans:"Jost", system-ui, sans-serif;
   }
   *{ box-sizing:border-box; }
-  html,body{ margin:0; }
+  html,body{ margin:0; overflow-x:hidden; }
+  @supports (overflow:clip){ html,body{ overflow-x:clip; } }
   body{
     font-family:var(--serif); color:var(--ink);
     background:linear-gradient(#fdf3e6 0%, #fbe7da 40%, #f4e6ef 100%);
@@ -57,12 +58,17 @@
   .cap{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(90vw, 900px); text-align:center;
     color:#fbf3e6; opacity:0; transition:opacity 1s ease, letter-spacing 4s ease; pointer-events:none;
-    text-shadow:0 2px 24px rgba(0,0,0,.55);
+    text-shadow:0 2px 24px rgba(0,0,0,.55); text-wrap:balance;
   }
   .cap.on{ opacity:1; }
   .cap.line{ font:italic 500 clamp(1.4rem, 3.6vw, 2.5rem)/1.25 var(--serif); }
   .cap.big{ font:500 clamp(1.6rem, 5.4vw, 3.6rem)/1 var(--sans); letter-spacing:.35em; text-transform:uppercase; }
   .cap.big.on{ letter-spacing:.5em; }
+  @media (orientation:portrait){
+    .cap.line{ top:auto; bottom:calc(6vh + 9vh); transform:translateX(-50%); width:86vw; font-size:1.45rem; text-shadow:0 1px 3px rgba(0,0,0,.7), 0 2px 22px rgba(0,0,0,.6); }
+    .cap.big{ letter-spacing:.22em; font-size:1.5rem; }
+    .cap.big.on{ letter-spacing:.32em; }
+  }
   #titlecard{ position:absolute; inset:0; display:grid; place-content:center; text-align:center; padding:24px; color:#fbf3e6; pointer-events:none; }
   #titlecard > *{ opacity:0; transition:opacity 1.6s ease, transform 2.4s ease; transform:translateY(8px); }
   #titlecard > .on{ opacity:1; transform:none; }
@@ -87,6 +93,15 @@
   @keyframes nudge{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(5px); } }
   #replay{ background:none; border:0; color:rgba(255,255,255,.55); font:400 11px/1 var(--sans); letter-spacing:.25em; text-transform:uppercase; padding:8px; }
   #after .auto{ font:400 11px/1 var(--sans); letter-spacing:.2em; color:rgba(255,255,255,.42); }
+  #cont{ white-space:nowrap; }
+  @media (max-width:560px){
+    #cont{ font-size:13px; letter-spacing:.16em; padding:15px 24px; }
+    #after{ padding:0 20px; }
+    #titlecard small{ letter-spacing:.22em; line-height:1.6; }
+  }
+  @media (orientation:portrait){
+    #titlecard{ align-content:start; padding-top:22vh; }
+  }
 
   /* ---------------------------------------------------------- page */
   main{ opacity:0; transition:opacity 1.4s ease; }
@@ -129,7 +144,7 @@
     background:
       radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.7), rgba(255,255,255,0) 60%),
       linear-gradient(#fbf1dc, #f4e4c4);
-    border-radius:4px; text-align:center;
+    border-radius:4px; text-align:center; overflow:hidden;
     box-shadow:0 30px 60px -30px rgba(90,60,30,.45), inset 0 0 0 10px #fbf1dc, inset 0 0 0 11px var(--gold), inset 0 0 0 15px #fbf1dc, inset 0 0 0 16px rgba(201,160,82,.55);
   }
   .cert .corner{ position:absolute; width:36px; height:36px; border:2px solid var(--gold); }
@@ -167,6 +182,18 @@
     transition:transform .35s cubic-bezier(.3,1.4,.5,1), opacity .2s; mix-blend-mode:multiply;
   }
   .stamp.on{ transform:rotate(-14deg) scale(1); opacity:1; }
+  @media (max-width:560px){
+    .cert{ padding:46px 24px 40px; }
+    .cert .corner{ width:22px; height:22px; }
+    .cert .c1, .cert .c2{ top:20px; } .cert .c3, .cert .c4{ bottom:20px; }
+    .cert .c1, .cert .c3{ left:20px; } .cert .c2, .cert .c4{ right:20px; }
+    .cert li{ font-size:1.05rem; }
+    .cert .foot{ display:grid; grid-template-columns:1fr 1fr; gap:20px 18px; align-items:start; }
+    .cert .wax{ order:-1; grid-column:1 / -1; justify-self:center; width:72px; height:72px; }
+    .cert .sig .s{ font-size:1.3rem; white-space:nowrap; }
+    .cert .sig small{ letter-spacing:.14em; }
+    .stamp{ top:auto; bottom:156px; right:16px; font-size:14px; padding:6px 9px; letter-spacing:.16em; }
+  }
 
   /* star chart */
   #sky{ background:linear-gradient(#f4e6ef, #1a1633 12%, #0e0c1f 88%, #f4e6ef); color:#efe6f6; padding-bottom:clamp(110px, 18vh, 180px); }
@@ -187,6 +214,11 @@
   .tracks .a{ font:400 13px/1.4 var(--sans); color:var(--soft); }
   .tracks .why{ display:block; font:italic 400 1rem/1.3 var(--serif); color:#b0485a; margin-top:3px; }
   .tracks .play{ width:34px; height:34px; border-radius:50%; border:1px solid rgba(176,72,90,.4); display:grid; place-items:center; color:#b0485a; font-size:12px; }
+  @media (max-width:560px){
+    .tracks a{ grid-template-columns:24px 1fr auto; gap:12px; padding:12px 6px; }
+    .tracks .a{ display:block; margin-top:2px; }
+    .tracks .a .dot{ display:none; }
+  }
 
   /* outro */
   #outro{ text-align:center; padding-bottom:140px; }
@@ -949,7 +981,7 @@
   $("#tracks").innerHTML = TRACKS.map(([s, a, why], i) => `
     <li><a href="https://music.youtube.com/search?q=${encodeURIComponent(s + " " + a)}" target="_blank" rel="noopener">
       <span class="n">${String(i + 1).padStart(2, "0")}</span>
-      <span><span class="s">${s}</span> <span class="a">· ${a}</span><span class="why">${why}</span></span>
+      <span><span class="s">${s}</span> <span class="a"><span class="dot">· </span>${a}</span><span class="why">${why}</span></span>
       <span class="play" aria-hidden="true">▶</span>
     </a></li>`).join("");
 
